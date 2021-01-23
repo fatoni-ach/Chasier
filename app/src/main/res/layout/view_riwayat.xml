@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:id="@+id/CV_riw"
+    android:layout_margin="5dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/TV_riw_tgl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAlignment="center"
+            android:text="Tanggal"
+            android:layout_gravity="center"
+            android:textSize="11pt"/>
+        <TextView
+            android:id="@+id/TV_riw_harga"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAlignment="center"
+            android:layout_gravity="center"
+            android:textSize="11pt"
+            android:text="Harga"
+            />
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
