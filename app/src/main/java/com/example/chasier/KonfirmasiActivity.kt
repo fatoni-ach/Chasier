@@ -6,12 +6,17 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.chasier.`class`.ConvertNominal
+import com.example.chasier.adapter.AdapterDetailP
 import com.example.chasier.adapter.AdapterKonfirmasi
 import com.example.chasier.api.ApiMain
 import com.example.chasier.model.Code
 import com.example.chasier.model.Produk
+import com.example.chasier.viewmodel.ActivityViewModel
+import kotlinx.android.synthetic.main.activity_detail.*
 import kotlinx.android.synthetic.main.activity_konfirmasi.*
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
@@ -20,9 +25,13 @@ import retrofit2.Response
 
 class KonfirmasiActivity : AppCompatActivity() {
     val apiMain = ApiMain()
+    lateinit var activityViewModel: ActivityViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_konfirmasi)
+
+        activityViewModel = ViewModelProvider(this).get(ActivityViewModel::class.java)
 
         val produkList: ArrayList<Produk>? =
             this.intent.extras!!.getParcelableArrayList<Produk>("produk")
@@ -56,18 +65,12 @@ class KonfirmasiActivity : AppCompatActivity() {
             id[i] = produklist.get(i).id
         }
 
-        apiMain.services.savePembelian("bd0b3ae6651538fac2515baafc9326c5", id, qty).enqueue( object : Callback<Code>{
-            override fun onResponse(call: Call<Code>, response: Response<Code>) {
-                if (response.isSuccessful){
-                    val code : Code = response.body()!!
-                    showDialog(code)
-                }
-            }
-            override fun onFailure(call: Call<Code>, t: Throwable) {
-                Log.d("Response gagal api : ", t.message.toString())
-
-            }
+        activityViewModel.setPembelian("bd0b3ae6651538fac2515baafc9326c5", id,  qty)!!.
+        observe(this, Observer { serviceSetterGetter ->
+            val code = serviceSetterGetter
+            showDialog(code)
         })
+
     }
 
     fun showDialog(code : Code){

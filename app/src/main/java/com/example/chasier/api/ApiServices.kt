@@ -10,7 +10,7 @@ import retrofit2.http.*
 interface ApiServices {
 
     @GET("kasir-app/public/api/produk")
-    fun getProduct(): Call<Array<Produk>>
+    fun getProduct(): Call<ArrayList<Produk>>
 
     @FormUrlEncoded
     @POST("kasir-app/public/api/penjualan/save")

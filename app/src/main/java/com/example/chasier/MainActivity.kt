@@ -9,27 +9,33 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.chasier.`class`.ConvertNominal
 import com.example.chasier.adapter.AdapterMain
 import com.example.chasier.adapter.AdapterMainBuy
 import com.example.chasier.api.ApiMain
 import com.example.chasier.model.Produk
+import com.example.chasier.viewmodel.ActivityViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.dialog_produk.view.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.NumberFormat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import java.util.*
 import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
-    val apiMain = ApiMain()
     val Rp = ConvertNominal()
+    lateinit var activityViewModel: ActivityViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        activityViewModel = ViewModelProvider(this).get(ActivityViewModel::class.java)
 
         RV_M_produk.setHasFixedSize(true)
         RV_M_produk.layoutManager = LinearLayoutManager(this)
@@ -39,9 +45,6 @@ class MainActivity : AppCompatActivity() {
         var jumlah = IntArray(20)
         val list2 = ArrayList<Produk>()
         val adapter2 = AdapterMainBuy(list2, TV_M_total, BT_M_total, qty, jumlah)
-//        adapter2.notifyDataSetChanged()
-
-        //tampilkan data dalam recycler view
         RV_M_produk.adapter = adapter2
 
         fab.setOnClickListener(object : View.OnClickListener{
@@ -52,29 +55,12 @@ class MainActivity : AppCompatActivity() {
                     qty[i] = 0
                 }
                 TV_M_total.text = "Rp. 0"
-                apiMain.services.getProduct().enqueue( object : Callback<Array<Produk>> {
-                    override fun onResponse(
-                        call: Call<Array<Produk>>,
-                        response: Response<Array<Produk>>
-                    ) {
-                        if (response.isSuccessful){
-                            val list = ArrayList<Produk>()
-                            val produk: Array<Produk> = response.body()!!
-
-                            for (i in 0 until produk.size){
-
-                                list.add(produk.get(i))
-                            }
-                            showDialog(list, list2, adapter2, qty)
-                        }
-                    }
-
-                    override fun onFailure(call: Call<Array<Produk>>, t: Throwable) {
-                        Log.d("Failure response : ", t.message.toString())
-                        Toast.makeText(baseContext, "Periksa koneksi internet anda !!", Toast.LENGTH_SHORT).show()
-
-                    }
+                activityViewModel.getProduk(baseContext)!!.
+                observe(this@MainActivity, Observer { serviceSetterGetter ->
+                    val list = serviceSetterGetter
+                    showDialog(list, list2, adapter2, qty)
                 })
+
             }
         })
 
